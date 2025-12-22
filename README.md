@@ -76,11 +76,3 @@ This project is being developed within the Civic Tech DC community. It is not a 
 If you’re interested in helping build this platform:
 
 👉 Join the `#ballot-sign` Slack channel in Civic Tech DC and introduce yourself.
-
----
-
-## More Detail
-
-For a deeper discussion of motivation, scope, and long-term vision, see:
-
-👉 [`docs/vision.md`](docs/vision.md)
