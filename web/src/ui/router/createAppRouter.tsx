@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { Navigate, createBrowserRouter } from 'react-router-dom'
 import { AppLayout } from '../shell/AppLayout'
 import { LandingPage } from '../views/LandingPage'
 import { InitiativeDetailPage } from '../views/InitiativeDetailPage'
@@ -24,6 +24,8 @@ export function createAppRouter() {
       element: <AppLayout />,
       children: [
         { path: '/', element: <LandingPage /> },
+        // If someone hits the physical file path in S3/CloudFront, redirect to the SPA root.
+        { path: '/index.html', element: <Navigate to="/" replace /> },
         { path: '/initiatives/:slug', element: <InitiativeDetailPage /> },
         { path: '/initiatives/:slug/sign', element: <InitiativeSignPage /> },
 
