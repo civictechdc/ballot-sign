@@ -168,6 +168,11 @@ textarea {
   border-radius: var(--radius-lg);
   padding: 1rem;
   box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.panel:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .muted {
@@ -180,4 +185,51 @@ textarea {
 
 .sans {
   font-family: var(--font-sans);
+}
+
+/* Primary Button Utility */
+.btn-primary {
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.6rem 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary:hover {
+  background: color-mix(in oklab, var(--btn-primary-bg) 85%, black 15%);
+  text-decoration: none;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+/* Secondary Button Utility */
+.btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1.5px solid var(--border-input);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-secondary:hover {
+  border-color: var(--btn-primary-bg);
+  background: color-mix(in oklab, var(--btn-primary-bg) 5%, transparent 95%);
+  text-decoration: none;
 }
