@@ -571,7 +571,7 @@
             <section class="initiatives">
                 <h2 class="section-header">Recommended for You</h2>
                 <div class="initiatives-list">
-                    <article class="initiative-card">
+                    <article class="initiative-card" data-initiative-id="parks-bond">
                         <div class="initiative-content">
                             <div class="initiative-icon">
                                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -592,7 +592,7 @@
                         </div>
                     </article>
 
-                    <article class="initiative-card">
+                    <article class="initiative-card" data-initiative-id="education-funding">
                         <div class="initiative-content">
                             <div class="initiative-icon">
                                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -615,7 +615,7 @@
                         </div>
                     </article>
 
-                    <article class="initiative-card">
+                    <article class="initiative-card" data-initiative-id="clean-energy">
                         <div class="initiative-content">
                             <div class="initiative-icon">
                                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -674,6 +674,11 @@
     </main>
 
     <script>
+        // API configuration
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:8001' 
+            : `https://ballot.${window.location.hostname.split('.').slice(1).join('.')}`;
+        
         // Add interactivity
         document.querySelectorAll('.filter-chip').forEach(chip => {
             chip.addEventListener('click', function() {
@@ -683,18 +688,87 @@
         });
 
         document.querySelectorAll('.sign-button').forEach(button => {
-            button.addEventListener('click', function() {
-                const originalText = this.textContent;
-                this.textContent = 'Signed! ✓';
-                this.style.background = '#3d4d3d';
-                this.disabled = true;
+            button.addEventListener('click', async function() {
+                const button = this;
+                const originalText = button.textContent;
+                const card = button.closest('.initiative-card');
+                const initiativeId = card.dataset.initiativeId;
                 
-                // For demo purposes, reset after 2 seconds
-                setTimeout(() => {
-                    this.textContent = originalText;
-                    this.style.background = '';
-                    this.disabled = false;
-                }, 2000);
+                if (!initiativeId) {
+                    console.error('No initiative ID found');
+                    return;
+                }
+                
+                // Show signing state
+                button.textContent = 'Signing...';
+                button.disabled = true;
+                
+                try {
+                    // For demo, we'll use a mock token. In production, get from Keycloak
+                    const mockToken = 'user-demo-' + Date.now();
+                    
+                    const response = await fetch(`${API_BASE_URL}/api/ballot/initiatives/${initiativeId}/sign`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${mockToken}`
+                        },
+                        body: JSON.stringify({
+                            initiative_id: initiativeId,
+                            name: 'Alex Demo',
+                            email: 'alex@example.com',
+                            zip_code: '20001'
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    
+                    // Update UI with new signature count
+                    button.textContent = 'Signed! ✓';
+                    button.style.background = '#3d4d3d';
+                    
+                    // Update progress bar and text
+                    const progressFill = card.querySelector('.progress-fill');
+                    const progressText = card.querySelector('.progress-text');
+                    
+                    if (progressFill && progressText) {
+                        const newPercentage = result.progress_percentage.toFixed(1);
+                        progressFill.style.width = `${newPercentage}%`;
+                        
+                        // Extract current numbers from text
+                        const textMatch = progressText.textContent.match(/(\d+[,]?\d*)\s*\/\s*(\d+[,]?\d*)/);
+                        if (textMatch) {
+                            const required = textMatch[2];
+                            const current = result.current_signatures.toLocaleString();
+                            progressText.textContent = `Signatures: ${current} / ${required}`;
+                        }
+                    }
+                    
+                    // Update activity sidebar
+                    const activitySection = document.querySelector('.activity-section .activity-item:first-child .activity-value');
+                    if (activitySection && card.querySelector('.initiative-title')) {
+                        const initiativeTitle = card.querySelector('.initiative-title').textContent;
+                        activitySection.textContent = initiativeTitle;
+                    }
+                    
+                    // Don't reset after timeout - keep as signed
+                    
+                } catch (error) {
+                    console.error('Error signing petition:', error);
+                    button.textContent = 'Error - Try Again';
+                    button.style.background = '#d9534f';
+                    
+                    // Reset after 3 seconds
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = '';
+                        button.disabled = false;
+                    }, 3000);
+                }
             });
         });
 
@@ -713,7 +787,37 @@
                     bar.style.width = width;
                 }, 300);
             });
+            
+            // Load initiatives data from API
+            loadInitiatives();
         });
+        
+        async function loadInitiatives() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/ballot/initiatives`);
+                if (!response.ok) return;
+                
+                const initiatives = await response.json();
+                
+                // Update each card with real data
+                document.querySelectorAll('.initiative-card').forEach(card => {
+                    const initiativeId = card.dataset.initiativeId;
+                    const initiative = initiatives.find(i => i.id === initiativeId);
+                    
+                    if (initiative) {
+                        const progressFill = card.querySelector('.progress-fill');
+                        const progressText = card.querySelector('.progress-text');
+                        
+                        if (progressFill && progressText) {
+                            progressFill.style.width = `${initiative.progress_percentage}%`;
+                            progressText.textContent = `Signatures: ${initiative.current_signatures.toLocaleString()} / ${initiative.required_signatures.toLocaleString()}`;
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading initiatives:', error);
+            }
+        }
     </script>
 </body>
 </html>
