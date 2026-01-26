@@ -8,6 +8,7 @@ NETWORK_NAME = "BALLOT"
 import docker_utils
 from nginx.run import run as nginx_run
 from PIdP.run import run as pidp_run
+from web.run import run as web_run
 
 docker_utils.initializeFiles()
 import editme 
@@ -228,4 +229,5 @@ SPICEDB = dict(
 )
 docker_utils.run_container(SPICEDB)
 
+web_run(NETWORK_NAME)
 nginx_run(NETWORK_NAME, prefix)

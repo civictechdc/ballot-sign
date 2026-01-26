@@ -6,11 +6,21 @@ import shutil
 
 here = Path(os.path.abspath(os.path.dirname(__file__)))
 webapp_dir = here
-webapp_android_dir = "../webapp-android"
-webapp_build_dir = "../webapp-build"
+webapp_android_dir = (here / ".." / "webapp-android").resolve()
+webapp_build_dir = (here / ".." / "webapp-build").resolve()
+uid = os.getuid()
+gid = os.getgid()
+VITE_KEYCLOAK_SERVER_URL = os.getenv("VITE_KEYCLOAK_SERVER_URL", "")
+VITE_KEYCLOAK_CLIENT_ID = os.getenv("VITE_KEYCLOAK_CLIENT_ID", "")
 
 
 def run(NETWORK_NAME):
+    os.makedirs(webapp_build_dir, exist_ok=True)
+    os.makedirs(webapp_android_dir, exist_ok=True)
+    os.makedirs(os.path.join(webapp_build_dir, "node_modules"), exist_ok=True)
+    os.makedirs(os.path.join(webapp_android_dir, "node_modules"), exist_ok=True)
+    os.makedirs(os.path.join(webapp_dir, ".gradle"), exist_ok=True)
+
     webapp_build = dict(
         image="node:23",
         detach=True,  # Runs the container in detached mode
@@ -35,9 +45,6 @@ def run(NETWORK_NAME):
         },
         command=(
             "sh -c '"
-            "cd /usr/src/opentdf-websdk/lib && "
-            "npm install && "
-            "npm run build && "
             "cd /usr/src/app && "
             "npm install && "
             "npm run build --verbose && "
@@ -112,9 +119,6 @@ def run(NETWORK_NAME):
         },
         command=(
             'sh -c "'
-            "cd /usr/src/opentdf-websdk/lib && "
-            "npm install && "
-            "npm run build && "
             "cd /usr/src/app && "
             "npm install && "
             "npm install -g nodemon && "
@@ -123,3 +127,7 @@ def run(NETWORK_NAME):
         # user=uid,
         # group_add=[gid],
     )
+
+    docker_utils.run_container(webapp)
+    docker_utils.run_container(webapp_build)
+    docker_utils.run_container(webapp_android_build)

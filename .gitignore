@@ -37,3 +37,6 @@ editme.py
 ubuntu-24.04.3-desktop-amd64.iso
 get-docker*
 *__pycache__
+
+webapp*
+web/package-lock.json

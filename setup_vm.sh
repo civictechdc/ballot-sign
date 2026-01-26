@@ -5,6 +5,10 @@ sudo apt install python3-pip curl
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh ./get-docker.sh
 
+sudo apt-get install -y avahi-daemon
+sudo hostnamectl set-hostname ballot-vm
+sudo systemctl enable --now avahi-daemon
+
 sudo groupadd docker
 sudo usermod -aG docker $USER
 newgrp docker
