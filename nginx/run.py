@@ -7,15 +7,16 @@ import shutil
 here = Path(os.path.abspath(os.path.dirname(__file__)))
 nginx_dir = here
 webapp_dir = here / ".." / "web"
+webapp_build_dir = here / ".." / "webapp-build"
 static_dir = here / ".." / "static"
 certs_dir = here / ".." / "certs"
 
 def run(network_name: str = "BALLOT", prefix: str = "ballot-") -> None:
 
     config_path = here / "nginx.conf"
-    if not config_path.exists() or config_path.stat().st_size == 0:
-        shutil.copy(here / "nginx.conf.template", config_path)
-    os.makedirs(here / "../web/dist", exist_ok=True)
+    #if not config_path.exists() or config_path.stat().st_size == 0:
+    #shutil.copy(here / "nginx.conf.template", config_path)
+    os.makedirs(webapp_build_dir, exist_ok=True)
     os.makedirs(certs_dir / "html", exist_ok=True)
     nginx = dict(
         image="nginx:latest",
@@ -28,7 +29,7 @@ def run(network_name: str = "BALLOT", prefix: str = "ballot-") -> None:
                 "bind": "/etc/nginx/nginx.conf",
                 "mode": "rw",
             },
-            os.path.join(webapp_dir, "dist"): {
+            os.path.join(webapp_build_dir): {
                 "bind": "/app",
                 "mode": "rw",
             },

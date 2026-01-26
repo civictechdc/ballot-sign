@@ -31,10 +31,7 @@ def run(NETWORK_NAME):
             webapp_dir: {"bind": "/usr/src/app", "mode": "rw"},
             webapp_build_dir: {"bind": "/usr/src/app/dist", "mode": "rw"},
             webapp_android_dir: {"bind": "/usr/src/app/android", "mode": "rw"},
-            os.path.join(webapp_build_dir, "node_modules"): {
-                "bind": "/usr/src/app/node_modules",
-                "mode": "rw",
-            },
+            "webapp_build_node_modules": {"bind": "/usr/src/app/node_modules", "mode": "rw"},
             # "dist_volume": {"bind": "/usr/src/app/dist", "mode": "rw"},
         },
         working_dir="/usr/src/app",
@@ -109,7 +106,8 @@ def run(NETWORK_NAME):
         restart_policy={"Name": "always"},
         volumes={
             webapp_dir: {"bind": "/usr/src/app", "mode": "rw"},
-            # "dist_volume": {"bind": "/usr/src/app/dist", "mode": "rw"},
+            # Keep node_modules in a Docker volume to avoid EOVERFLOW on shared mounts.
+            "webapp_node_modules": {"bind": "/usr/src/app/node_modules", "mode": "rw"},
         },
         working_dir="/usr/src/app",
         environment={
@@ -122,7 +120,7 @@ def run(NETWORK_NAME):
             "cd /usr/src/app && "
             "npm install && "
             "npm install -g nodemon && "
-            "nodemon --watch . --exec 'npm run dev'\""
+            "nodemon --watch . --exec 'npm run dev -- --host 0.0.0.0 --port 5173'\""
         ),
         # user=uid,
         # group_add=[gid],
