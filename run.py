@@ -1,6 +1,4 @@
 import os
-import subprocess
-import sys
 from pathlib import Path
 here = Path(os.path.abspath(os.path.dirname(__file__)))
 nginx_dir = here / "nginx"
@@ -23,41 +21,25 @@ def _env_flag(name: str, default: bool = False) -> bool:
     return value.strip().lower() in {"1", "true", "yes", "y", "on"}
 
 
-def ensure_certs(debug: bool) -> None:
+def ensure_nginx_certs() -> None:
     certs_dir = here / "certs"
     html_dir = certs_dir / "html"
     html_dir.mkdir(parents=True, exist_ok=True)
 
-    if not debug:
+    nginx_certs_dir = certs_dir / "nginx"
+    fullchain = nginx_certs_dir / "fullchain.pem"
+    privkey = nginx_certs_dir / "privkey.pem"
+
+    if fullchain.exists() and privkey.exists():
+        print("NGINX certs already exist; skipping generation.")
         return
 
-    init_script = certs_dir / "init-temp-keys.py"
-    required = [
-        certs_dir / "kas-private.pem",
-        certs_dir / "kas-cert.pem",
-        certs_dir / "kas-ec-private.pem",
-        certs_dir / "kas-ec-cert.pem",
-        certs_dir / "keys" / "localhost.crt",
-        certs_dir / "keys" / "localhost.key",
-    ]
-
-    if all(path.exists() for path in required):
-        print("Temporary certs already exist; skipping init-temp-keys.")
-        return
-
-    if not init_script.exists():
-        raise FileNotFoundError(f"Missing cert bootstrap script: {init_script}")
-
-    print("Initializing temporary certs for debug mode...")
-    subprocess.run(
-        [sys.executable, str(init_script), "--output", "."],
-        cwd=str(certs_dir),
-        check=True,
-    )
+    nginx_certs_dir.mkdir(parents=True, exist_ok=True)
+    print("Generating self-signed NGINX certs (no Keycloak dependency)...")
+    docker_utils.generateDevKeys(str(nginx_certs_dir))
 
 
-debug_mode = bool(getattr(editme, "DEBUG", False)) or _env_flag("DEBUG")
-ensure_certs(debug_mode)
+ensure_nginx_certs()
 
 def ensure_pidp_image() -> None:
     images = docker_utils.DOCKER_CLIENT.images.list(name="pidp")

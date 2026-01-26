@@ -12,8 +12,9 @@ certs_dir = here / ".." / "certs"
 
 def run(network_name: str = "BALLOT", prefix: str = "ballot-") -> None:
 
-    if not os.path.exists("nginx.conf"):
-        shutil.copy(here / "nginx.conf.template", here / "nginx.conf")
+    config_path = here / "nginx.conf"
+    if not config_path.exists() or config_path.stat().st_size == 0:
+        shutil.copy(here / "nginx.conf.template", config_path)
     os.makedirs(here / "../web/dist", exist_ok=True)
     os.makedirs(certs_dir / "html", exist_ok=True)
     nginx = dict(
@@ -34,6 +35,10 @@ def run(network_name: str = "BALLOT", prefix: str = "ballot-") -> None:
             static_dir: {
                 "bind": "/static",
                 "mode": "rw",
+            },
+            certs_dir: {
+                "bind": "/certs",
+                "mode": "ro",
             },
             os.path.join(certs_dir, "html"): {
                 "bind": "/usr/share/nginx/html",
