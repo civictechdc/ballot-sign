@@ -6,6 +6,6 @@ export default defineConfig(({ command }) => ({
   plugins: [react()],
   base: command === 'serve' ? '/dev/' : '/',
   server: {
-    allowedHosts: ['ballot-vm.local'],
+    allowedHosts: ['ballot-vm.local', 'ballot.arkavo.org'],
   },
 }))
