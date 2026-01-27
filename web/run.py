@@ -114,13 +114,15 @@ def run(NETWORK_NAME):
             "NODE_ENV": "development",
             "SPICE_SERVER_URL": VITE_KEYCLOAK_SERVER_URL,
             "PIDP_SERVER_URL": VITE_KEYCLOAK_CLIENT_ID,
+            "CHOKIDAR_USEPOLLING": "1",
+            "CHOKIDAR_INTERVAL": "200",
         },
         command=(
             'sh -c "'
             "cd /usr/src/app && "
             "npm install && "
             "npm install -g nodemon && "
-            "nodemon --watch . --exec 'npm run dev -- --host 0.0.0.0 --port 5173'\""
+            "nodemon -L --watch src --watch index.html --watch vite.config.ts --exec 'npm run dev -- --host 0.0.0.0 --port 5173'\""
         ),
         # user=uid,
         # group_add=[gid],

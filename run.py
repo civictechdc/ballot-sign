@@ -8,6 +8,7 @@ NETWORK_NAME = "BALLOT"
 import docker_utils
 from nginx.run import run as nginx_run
 from PIdP.run import run as pidp_run
+import importlib.util
 from web.run import run as web_run
 
 docker_utils.initializeFiles()
@@ -54,6 +55,16 @@ def ensure_pidp_image() -> None:
     )
 
 ensure_pidp_image()
+def _load_ballot_backend_run():
+    backend_run_path = here / "ballot-backend" / "run.py"
+    spec = importlib.util.spec_from_file_location("ballot_backend_run", backend_run_path)
+    if spec and spec.loader:
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module.run
+    raise ImportError("Failed to load ballot-backend/run.py")
+
+
 docker_utils.ensure_network(NETWORK_NAME)
 pidp_run(prefix, NETWORK_NAME)
 #wait for PIdP to initialize
@@ -190,8 +201,8 @@ SPICEDB_MIGRATE = dict(
         f"--datastore-conn-uri={dsn}",
     ],
 )
-# Dont run this? We're not migrating anything
-#docker_utils.run_container(SPICEDB_MIGRATE)
+if _env_flag("RUN_SPICEDB_MIGRATE", default=True):
+    docker_utils.run_container(SPICEDB_MIGRATE)
 
 # 3) SpiceDB API service
 SPICEDB = dict(
@@ -229,5 +240,7 @@ SPICEDB = dict(
 )
 docker_utils.run_container(SPICEDB)
 
+ballot_backend_run = _load_ballot_backend_run()
+ballot_backend_run(NETWORK_NAME, prefix)
 web_run(NETWORK_NAME)
 nginx_run(NETWORK_NAME, prefix)

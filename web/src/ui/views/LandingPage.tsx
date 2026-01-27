@@ -3,9 +3,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { useServices } from '../../app/AppProviders'
 import { listInitiatives } from '../../application/usecases/listInitiatives'
 import type { Initiative } from '../../domain/initiative/Initiative'
+import { useLegislativeBody } from '../legislativeBodies'
 
 export function LandingPage() {
   const { initiativeRepository } = useServices()
+  const { body: legislativeBody } = useLegislativeBody()
   const [items, setItems] = useState<Initiative[]>([])
   const [q, setQ] = useState('')
 
@@ -62,7 +64,7 @@ export function LandingPage() {
             letterSpacing: '-0.02em',
           }}
         >
-          Your Voice for [City, State].
+          Your Voice for {legislativeBody}.
         </h1>
         <p className="muted" style={{ marginTop: '1rem', fontSize: '1.05rem', lineHeight: 1.5 }}>
           Discover, support, and sign ballot initiatives that matter to you and your community.

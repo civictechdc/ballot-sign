@@ -8,6 +8,7 @@ import time
 from datetime import datetime, timedelta
 from typing import Dict, Optional, Any, List, Type
 from pathlib import Path
+from urllib.parse import urlparse
 
 here = Path(os.path.abspath(os.path.dirname(__file__)))
 
@@ -206,7 +207,21 @@ def run_container(config):
 def wait_for_db(network, db_url, db_user="postgres", max_attempts=30, delay=2):
     print(f"Using db_url: {db_url}")
     print(f"Waiting for the database to respond on {db_url}...")
-    host, port = db_url.split(":")
+    if "://" in db_url:
+        parsed = urlparse(db_url)
+        host = parsed.hostname
+        port = parsed.port or 5432
+    else:
+        host_port = db_url.split("/", 1)[0]
+        if ":" in host_port:
+            host, port_str = host_port.rsplit(":", 1)
+            port = int(port_str)
+        else:
+            host = host_port
+            port = 5432
+
+    if not host:
+        raise ValueError(f"Could not parse host from db_url: {db_url}")
 
     while True:
         try:
@@ -627,4 +642,3 @@ def check_amd_gpu():
 
 if __name__ == "__main__":
     generateDevKeys('test')
-
