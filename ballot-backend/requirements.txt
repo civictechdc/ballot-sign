@@ -2,5 +2,6 @@ fastapi
 uvicorn[standard]
 redis
 requests
+httpx
 PyJWT
 cryptography
