@@ -126,6 +126,16 @@ export function AppProviders(props: { services: AppServices; children: ReactNode
         body: JSON.stringify({ email, password, full_name: fullName ?? null }),
       })
       if (!resp.ok) {
+        if (resp.status === 409) {
+          const data = await resp.json().catch(() => null)
+          const detail =
+            typeof data?.detail === 'string'
+              ? data.detail
+              : typeof data?.detail?.message === 'string'
+                ? data.detail.message
+                : null
+          throw new Error(detail || 'Account already exists. Please log in.')
+        }
         const message = await formatApiError(resp, `Registration failed (${resp.status}).`)
         throw new Error(message)
       }

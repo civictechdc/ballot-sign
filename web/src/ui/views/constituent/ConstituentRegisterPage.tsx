@@ -9,6 +9,11 @@ export function ConstituentRegisterPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const accountExists = Boolean(
+    error &&
+      (error.toLowerCase().includes('account already exists') ||
+        error.toLowerCase().includes('already registered')),
+  )
 
   useEffect(() => {
     document.title = 'ballot-sign • Constituent registration'
@@ -65,7 +70,9 @@ export function ConstituentRegisterPage() {
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
-                <strong style={{ fontSize: '1.1rem' }}>Registration failed</strong>
+                <strong style={{ fontSize: '1.1rem' }}>
+                  {accountExists ? 'Account already exists' : 'Registration failed'}
+                </strong>
                 <button
                   type="button"
                   onClick={() => setError(null)}
@@ -81,10 +88,23 @@ export function ConstituentRegisterPage() {
                   ×
                 </button>
               </div>
-              <div style={{ marginTop: '0.75rem' }}>{error}</div>
-              <div style={{ marginTop: '0.75rem', fontSize: '0.9rem' }}>
-                Check that the PIdP service is reachable at <code>/pidp</code>.
+              <div style={{ marginTop: '0.75rem' }}>
+                {accountExists ? (
+                  <>
+                    An account with this email already exists. Please log in instead.
+                    <div style={{ marginTop: '0.75rem' }}>
+                      <Link to="/constituent/login">Go to login</Link>
+                    </div>
+                  </>
+                ) : (
+                  error
+                )}
               </div>
+              {!accountExists ? (
+                <div style={{ marginTop: '0.75rem', fontSize: '0.9rem' }}>
+                  Check that the PIdP service is reachable at <code>/pidp</code>.
+                </div>
+              ) : null}
               <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
                 <button
                   type="button"

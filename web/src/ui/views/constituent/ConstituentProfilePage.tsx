@@ -17,7 +17,7 @@ type ProfileDraft = {
 }
 
 export function ConstituentProfilePage() {
-  const { user, setUser, token } = useAuth()
+  const { user, setUser, token, logout } = useAuth()
   const [fullName, setFullName] = useState('')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -539,6 +539,10 @@ export function ConstituentProfilePage() {
                               },
                             })
                             if (!resp.ok) {
+                              if (resp.status === 401) {
+                                logout()
+                                throw new Error('Session expired. Please log in again to upload a photo.')
+                              }
                               const text = await resp.text().catch(() => '')
                               throw new Error(text || `Upload setup failed (${resp.status})`)
                             }
