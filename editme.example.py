@@ -1,4 +1,4 @@
-prefix = "ballot-"
+prefix = ""
 MINIO_ROOT_USER = "minio"
 MINIO_ROOT_PASSWORD = "changeme"
 SPICEDB_POSTGRES_USER = "spicedb"

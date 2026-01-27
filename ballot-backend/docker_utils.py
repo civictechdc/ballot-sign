@@ -597,7 +597,7 @@ def initializeFiles(srcdir = here):
     envExampleFile = os.path.join(srcdir, "editme.example.py")
     if not os.path.isfile(envFile):
         shutil.copy(envExampleFile, envFile)
-        print("env.py file did not exist and has been created. Please edit it to update the necessary values, then re-run this script.")
+        print("editme.py file did not exist and has been created. Please edit it to update the necessary values, then re-run this script.")
         
         # Exit only if not in GitHub Actions
         if not in_github_actions:
