@@ -186,6 +186,13 @@ dsn = (
     f"{editme.SPICEDB_POSTGRES_DB}?sslmode=disable"
 )
 
+# Wait for the DB to accept connections before running migrations.
+docker_utils.wait_for_db(
+    NETWORK_NAME,
+    dsn,
+    db_user=editme.SPICEDB_POSTGRES_USER,
+)
+
 # 2) Run migrations (one-shot container)
 # NOTE: you may want docker_utils.run_container to support `remove=True` or similar.
 SPICEDB_MIGRATE = dict(
