@@ -34,38 +34,38 @@ This document summarizes the services created by `run.py` and how they connect.
 
 ```mermaid
 flowchart LR
-  subgraph Client
-    Browser[Browser]
+  subgraph Client["Client"]
+    Browser["Browser"]
   end
 
-  subgraph Edge
-    NGINX[nginx]
+  subgraph Edge["Edge"]
+    NGINX["nginx"]
   end
 
-  subgraph Web
-    WEBAPP[webapp dev (Vite)]
-    WEB_BUILD[webapp_build]
-    ANDROID[webapp_android_build]
+  subgraph Web["Web"]
+    WEBAPP["webapp dev (Vite)"]
+    WEB_BUILD["webapp_build"]
+    ANDROID["webapp_android_build"]
   end
 
-  subgraph Identity
-    PIDP[PIdP]
-    PIDP_DB[(PIdP Postgres)]
+  subgraph Identity["Identity"]
+    PIDP["PIdP"]
+    PIDP_DB[("PIdP Postgres")]
   end
 
-  subgraph Storage
-    REDIS[(Redis)]
-    MINIO[(MinIO)]
+  subgraph Storage["Storage"]
+    REDIS[("Redis")]
+    MINIO[("MinIO")]
   end
 
-  subgraph AuthZ
-    SPICE_DB[(SpiceDB Postgres)]
-    SPICE_MIGRATE[spicedb-migrate]
-    SPICE[SpiceDB]
+  subgraph AuthZ["AuthZ"]
+    SPICE_DB[("SpiceDB Postgres")]
+    SPICE_MIGRATE["spicedb-migrate"]
+    SPICE["SpiceDB"]
   end
 
-  subgraph Backend
-    BALLOT[ballot-backend]
+  subgraph Backend["Backend"]
+    BALLOT["ballot-backend"]
   end
 
   Browser -->|HTTPS| NGINX
@@ -88,5 +88,21 @@ flowchart LR
 
   SPICE --> SPICE_DB
   SPICE_MIGRATE --> SPICE_DB
+
+  classDef client fill:#e1f5fe,stroke:#01579b,stroke-width:3px,color:#000
+  classDef edge fill:#fff3e0,stroke:#e65100,stroke-width:3px,color:#000
+  classDef web fill:#f3e5f5,stroke:#4a148c,stroke-width:3px,color:#000
+  classDef identity fill:#e8f5e8,stroke:#1b5e20,stroke-width:3px,color:#000
+  classDef backend fill:#fff8e1,stroke:#ff6f00,stroke-width:3px,color:#000
+  classDef storage fill:#e0f2f1,stroke:#004d40,stroke-width:3px,color:#000
+  classDef authz fill:#fce4ec,stroke:#880e4f,stroke-width:3px,color:#000
+
+  class Client client
+  class Edge edge
+  class Web web
+  class Identity identity
+  class Storage storage
+  class AuthZ authz
+  class Backend backend
 ```
 
