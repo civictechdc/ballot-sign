@@ -736,13 +736,13 @@ async def get_my_signature(
             redis_client.set(get_user_signature_key(initiative_id, user_id), recovered_id)
             signature_id = recovered_id
         else:
-            raise HTTPException(status_code=404, detail="Signature not found")
+            return {"signed": False}
     signature_key = f"ballot:signature:{signature_id.decode() if isinstance(signature_id, bytes) else signature_id}"
     signature_data = redis_client.hgetall(signature_key)
     if not signature_data:
-        raise HTTPException(status_code=404, detail="Signature not found")
+        return {"signed": False}
     decoded = {k.decode(): v.decode() for k, v in signature_data.items()}
-    return decoded
+    return {"signed": True, **decoded}
 
 @app.delete("/api/ballot/initiatives/{initiative_id}/signatures/me")
 async def delete_my_signature(

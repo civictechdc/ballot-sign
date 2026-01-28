@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '../../../app/AppProviders'
 import { useLegislativeBody } from '../../legislativeBodies'
+import { SignatureModal } from '../../components/SignatureModal'
 
 type Initiative = {
   id: string
@@ -117,6 +118,10 @@ export function CampaignInitiativeBallotPage() {
     })
       .then((resp) => (resp.ok ? resp.json() : null))
       .then((data) => {
+        if (data && data.signed === false) {
+          setMySignature(null)
+          return
+        }
         if (data) setMySignature(data)
         else setMySignature(null)
       })
@@ -576,98 +581,44 @@ export function CampaignInitiativeBallotPage() {
           </div>
         </div>
       ) : null}
-      {isSigning ? (
-        <div
-          role="dialog"
-          aria-modal="true"
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.45)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 2000,
-            padding: '1.5rem',
-          }}
-        >
-          <div
-            style={{
-              maxWidth: 560,
-              width: '100%',
-              background: 'var(--color-white)',
-              borderRadius: 12,
-              padding: '1.25rem 1.5rem',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
-              <strong style={{ fontSize: '1.1rem' }}>Sign this initiative</strong>
-              <button type="button" onClick={() => setIsSigning(false)} aria-label="Close">
-                ×
-              </button>
-            </div>
-            <p className="muted" style={{ marginTop: '0.75rem' }}>
-              Draw your signature below.
-            </p>
-            <canvas
-              ref={canvasRef}
-              width={480}
-              height={200}
-              style={{
-                width: '100%',
-                border: '1px solid var(--color-border)',
-                borderRadius: 8,
-                background: '#fff',
-              }}
-            />
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.75rem' }}>
-              <button
-                type="button"
-                onClick={() => {
-                  const ctx = canvasRef.current?.getContext('2d')
-                  if (!ctx || !canvasRef.current) return
-                  ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
-                }}
-              >
-                Clear
-              </button>
-              <button
-                type="button"
-                onClick={async () => {
-                  if (!initiative) return
-                  try {
-                    const signatureImage = canvasRef.current?.toDataURL('image/png') ?? undefined
-                    const resp = await fetch(`/api/ballot/initiatives/${initiative.id}/sign`, {
-                      method: 'POST',
-                      headers: token
-                        ? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
-                        : { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ initiative_id: initiative.id, signature_image: signatureImage }),
-                    })
-                    if (!resp.ok) {
-                      const text = await resp.text().catch(() => '')
-                      throw new Error(text || `Sign failed (${resp.status})`)
-                    }
-                    const data = await resp.json().catch(() => null)
-                    if (data?.signature_id && token) {
-                      const mine = await fetch(`/api/ballot/initiatives/${initiative.id}/signatures/me`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                      }).then((r) => (r.ok ? r.json() : null))
-                      if (mine) setMySignature(mine)
-                    }
-                    setIsSigning(false)
-                  } catch {
-                    setIsSigning(false)
-                  }
-                }}
-              >
-                Submit signature
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <SignatureModal
+        open={isSigning}
+        onClose={() => setIsSigning(false)}
+        canvasRef={canvasRef}
+        onClear={() => {
+          const ctx = canvasRef.current?.getContext('2d')
+          if (!ctx || !canvasRef.current) return
+          ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
+        }}
+        onSubmit={async () => {
+          if (!initiative) return
+          try {
+            const signatureImage = canvasRef.current?.toDataURL('image/png') ?? undefined
+            const resp = await fetch(`/api/ballot/initiatives/${initiative.id}/sign`, {
+              method: 'POST',
+              headers: token
+                ? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+                : { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ initiative_id: initiative.id, signature_image: signatureImage }),
+            })
+            if (!resp.ok) {
+              const text = await resp.text().catch(() => '')
+              throw new Error(text || `Sign failed (${resp.status})`)
+            }
+            const data = await resp.json().catch(() => null)
+            if (data?.signature_id && token) {
+              const mine = await fetch(`/api/ballot/initiatives/${initiative.id}/signatures/me`, {
+                headers: { Authorization: `Bearer ${token}` },
+              }).then((r) => (r.ok ? r.json() : null))
+              if (mine && mine.signed === false) setMySignature(null)
+              else if (mine) setMySignature(mine)
+            }
+            setIsSigning(false)
+          } catch {
+            setIsSigning(false)
+          }
+        }}
+      />
     </section>
   )
 }

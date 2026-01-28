@@ -4,6 +4,7 @@ import { useAuth } from './app/AppProviders'
 import { Header } from './ui/shell/Header'
 import { Footer } from './ui/shell/Footer'
 import { useLegislativeBody } from './ui/legislativeBodies'
+import { SignatureModal } from './ui/components/SignatureModal'
 
 const fontLinks = [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -513,8 +514,10 @@ export function App() {
           border: 1px solid var(--color-border);
           border-radius: var(--radius-lg);
           padding: 1.25rem;
-          box-shadow: var(--shadow-sm);
+          box-shadow: 0 10px 30px rgba(59, 70, 60, 0.08);
           transition: box-shadow 0.2s ease, transform 0.2s ease;
+          position: relative;
+          overflow: hidden;
         }
 
         .initiative-card:hover {
@@ -522,9 +525,59 @@ export function App() {
           transform: translateY(-2px);
         }
 
+        .initiative-card::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 6px;
+          height: 100%;
+          background: linear-gradient(180deg, rgba(98, 140, 118, 0.95), rgba(164, 188, 172, 0.25));
+        }
+
         .initiative-content {
           display: flex;
           gap: 1rem;
+        }
+
+        .initiative-votes {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.4rem;
+          margin-right: 0.5rem;
+          min-width: 64px;
+        }
+
+        .vote-button {
+          width: 34px;
+          height: 34px;
+          border-radius: 999px;
+          border: 1px solid var(--color-border);
+          background: #fff;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          color: #2f2b22;
+          transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .vote-button:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 6px 16px rgba(28, 44, 36, 0.12);
+        }
+
+        .vote-button.is-up {
+          border-color: #a9d6b8;
+          background: #e7f7ec;
+          color: #1b8a3a;
+        }
+
+        .vote-button.is-down {
+          border-color: #f4b7b0;
+          background: #fdeceb;
+          color: #b42318;
         }
 
         .initiative-icon {
@@ -557,6 +610,35 @@ export function App() {
           line-height: 1.4;
         }
 
+        .initiative-title-link {
+          background: none;
+          border: none;
+          padding: 0;
+          font: inherit;
+          color: inherit;
+          text-decoration: underline;
+          cursor: pointer;
+        }
+
+        .initiative-header {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 0.75rem;
+        }
+
+        .initiative-target {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.4rem;
+          padding: 0.35rem 0.6rem;
+          border-radius: 999px;
+          background: #f3f5f1;
+          border: 1px solid rgba(150, 160, 150, 0.25);
+          font-size: 0.85rem;
+          color: var(--color-text-secondary);
+        }
+
         .progress-container {
           margin-bottom: 0.5rem;
         }
@@ -581,27 +663,47 @@ export function App() {
           margin-top: 0.5rem;
         }
 
+        .initiative-actions {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 0.75rem;
+          margin-top: 0.85rem;
+        }
+
         .sign-button {
-          width: 100%;
-          background: var(--color-sage);
-          color: var(--color-white);
-          border: none;
-          border-radius: var(--radius-md);
-          padding: 0.75rem 1.5rem;
-          font-family: var(--font-body);
+          min-width: 110px;
+          height: 42px;
+          border-radius: 999px;
+          border: 1px solid rgba(63, 96, 76, 0.35);
+          background: linear-gradient(140deg, #6b9b7f, #3f6f55);
+          color: #fff;
           font-size: 0.95rem;
-          font-weight: 500;
+          font-weight: 600;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
           cursor: pointer;
-          transition: background-color 0.2s ease, transform 0.1s ease;
-          margin-top: 1rem;
+          transition: transform 0.15s ease, box-shadow 0.2s ease;
         }
 
         .sign-button:hover {
-          background: var(--color-sage-dark);
+          transform: translateY(-1px);
+          box-shadow: 0 10px 18px rgba(40, 70, 55, 0.2);
         }
 
-        .sign-button:active {
-          transform: scale(0.98);
+        .details-toggle {
+          width: 34px;
+          height: 34px;
+          border-radius: 999px;
+          border: 1px solid var(--color-border);
+          background: #fff;
+          color: var(--color-text-primary);
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1rem;
+          cursor: pointer;
         }
 
         /* Sidebar */
@@ -778,33 +880,17 @@ export function App() {
                       key={initiative.id}
                       className="initiative-card"
                       data-initiative-id={initiative.id}
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => navigate(`/campaign/initiatives/${initiative.id}/ballot`)}
-                      onKeyDown={(event) => {
-                        if (event.key === 'Enter' || event.key === ' ') {
-                          event.preventDefault()
-                          navigate(`/campaign/initiatives/${initiative.id}/ballot`)
-                        }
-                      }}
-                      style={{ cursor: 'pointer' }}
                     >
                       <div className="initiative-content">
-                        <div
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: '0.35rem',
-                            marginRight: '0.75rem',
-                          }}
-                        >
+                        <div className="initiative-votes">
                           <button
                             type="button"
                             aria-label="Upvote and sign"
                             onClick={async () => {
                               // prevent card navigation
                               const prevVote = voteState[initiative.id] ?? null
+                              setSigningInitiative(initiative.id)
+                              setIsSigning(true)
                               if (!token) {
                                 setVoteStatus('Login required to vote.')
                               } else {
@@ -841,21 +927,12 @@ export function App() {
                                   setVoteStatus(err instanceof Error ? err.message : 'Vote failed.')
                                 }
                               }
-                              setSigningInitiative(initiative.id)
-                              setIsSigning(true)
                             }}
                             style={{
-                              width: 34,
-                              height: 34,
-                              borderRadius: 999,
-                              border: '1px solid var(--color-border)',
                               background: voteState[initiative.id] === 'up' ? '#e7f7ec' : '#fff',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
                               color: voteState[initiative.id] === 'up' ? '#1b8a3a' : '#2f2b22',
                             }}
+                            className={`vote-button ${voteState[initiative.id] === 'up' ? 'is-up' : ''}`}
                             onClickCapture={(event) => event.stopPropagation()}
                           >
                             ▲
@@ -907,17 +984,10 @@ export function App() {
                               }
                             }}
                             style={{
-                              width: 34,
-                              height: 34,
-                              borderRadius: 999,
-                              border: '1px solid var(--color-border)',
                               background: voteState[initiative.id] === 'down' ? '#fdeceb' : '#fff',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
                               color: voteState[initiative.id] === 'down' ? '#b42318' : '#2f2b22',
                             }}
+                            className={`vote-button ${voteState[initiative.id] === 'down' ? 'is-down' : ''}`}
                             onClickCapture={(event) => event.stopPropagation()}
                           >
                             ▼
@@ -940,10 +1010,34 @@ export function App() {
                           </svg>
                         </div>
                         <div className="initiative-details">
-                          <h3 className="initiative-title">{initiative.title}</h3>
+                          <div className="initiative-header">
+                            <h3 className="initiative-title">
+                              <button
+                                type="button"
+                                className="initiative-title-link"
+                                onClick={() => navigate(`/campaign/initiatives/${initiative.id}/ballot`)}
+                              >
+                                {initiative.title}
+                              </button>
+                            </h3>
+                            <button
+                              type="button"
+                              className="details-toggle"
+                              aria-label="Toggle initiative text"
+                              onClick={() =>
+                                setExpandedInitiatives((prev) => ({
+                                  ...prev,
+                                  [initiative.id]: !prev[initiative.id],
+                                }))
+                              }
+                              onClickCapture={(event) => event.stopPropagation()}
+                            >
+                              {expandedInitiatives[initiative.id] ? '−' : '+'}
+                            </button>
+                          </div>
                           {initiative.location ? (
                             <p className="muted" style={{ marginTop: 0, marginBottom: '0.6rem' }}>
-                              Target:{' '}
+                              <span className="initiative-target">Target:&nbsp;
                               <button
                                 type="button"
                                 onClick={(event) => {
@@ -963,6 +1057,7 @@ export function App() {
                               >
                                 {initiative.location}
                               </button>
+                              </span>
                             </p>
                           ) : null}
                           <div className="progress-container">
@@ -979,31 +1074,20 @@ export function App() {
                               {initiative.description || 'No additional ballot details provided.'}
                             </p>
                           ) : null}
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setExpandedInitiatives((prev) => ({
-                                ...prev,
-                                [initiative.id]: !prev[initiative.id],
-                              }))
-                            }
-                            className="sign-button"
-                            style={{
-                              textDecoration: 'none',
-                              display: 'inline-flex',
-                              justifyContent: 'center',
-                              background: 'transparent',
-                              color: 'var(--color-text-primary)',
-                              border: '1px solid var(--color-border)',
-                              width: 36,
-                              height: 36,
-                              padding: 0,
-                              borderRadius: 999,
-                            }}
-                            onClickCapture={(event) => event.stopPropagation()}
-                          >
-                            {expandedInitiatives[initiative.id] ? '−' : '+'}
-                          </button>
+                          <div className="initiative-actions">
+                            <button
+                              type="button"
+                              aria-label="Sign this initiative"
+                              className="sign-button"
+                              onClick={() => {
+                                setSigningInitiative(initiative.id)
+                                setIsSigning(true)
+                              }}
+                              onClickCapture={(event) => event.stopPropagation()}
+                            >
+                              Sign initiative
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </article>
@@ -1117,93 +1201,38 @@ export function App() {
         </div>
       </main>
       <Footer />
-      {isSigning ? (
-        <div
-          role="dialog"
-          aria-modal="true"
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.45)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 2000,
-            padding: '1.5rem',
-          }}
-        >
-          <div
-            style={{
-              maxWidth: 560,
-              width: '100%',
-              background: 'var(--color-white)',
-              borderRadius: 12,
-              padding: '1.25rem 1.5rem',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
-              <strong style={{ fontSize: '1.1rem' }}>Sign this initiative</strong>
-              <button type="button" onClick={() => setIsSigning(false)} aria-label="Close">
-                ×
-              </button>
-            </div>
-            <p className="muted" style={{ marginTop: '0.75rem' }}>
-              Draw your signature below.
-            </p>
-            <canvas
-              ref={canvasRef}
-              width={480}
-              height={200}
-              style={{
-                width: '100%',
-                border: '1px solid var(--color-border)',
-                borderRadius: 8,
-                background: '#fff',
-              }}
-            />
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.75rem' }}>
-              <button
-                type="button"
-                onClick={() => {
-                  const ctx = canvasRef.current?.getContext('2d')
-                  if (!ctx || !canvasRef.current) return
-                  ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
-                }}
-              >
-                Clear
-              </button>
-              <button
-                type="button"
-                onClick={async () => {
-                  if (!signingInitiative) return
-                  if (!token) {
-                    alert('Login required to sign.')
-                    return
-                  }
-                  try {
-                    const signatureImage = canvasRef.current?.toDataURL('image/png') ?? undefined
-                    const resp = await fetch(`/api/ballot/initiatives/${signingInitiative}/sign`, {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                      body: JSON.stringify({ initiative_id: signingInitiative, signature_image: signatureImage }),
-                    })
-                    if (!resp.ok) {
-                      const text = await resp.text().catch(() => '')
-                      throw new Error(text || `Sign failed (${resp.status})`)
-                    }
-                    setIsSigning(false)
-                  } catch {
-                    setIsSigning(false)
-                  }
-                }}
-              >
-                Submit signature
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <SignatureModal
+        open={isSigning}
+        onClose={() => setIsSigning(false)}
+        canvasRef={canvasRef}
+        onClear={() => {
+          const ctx = canvasRef.current?.getContext('2d')
+          if (!ctx || !canvasRef.current) return
+          ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
+        }}
+        onSubmit={async () => {
+          if (!signingInitiative) return
+          if (!token) {
+            alert('Login required to sign.')
+            return
+          }
+          try {
+            const signatureImage = canvasRef.current?.toDataURL('image/png') ?? undefined
+            const resp = await fetch(`/api/ballot/initiatives/${signingInitiative}/sign`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify({ initiative_id: signingInitiative, signature_image: signatureImage }),
+            })
+            if (!resp.ok) {
+              const text = await resp.text().catch(() => '')
+              throw new Error(text || `Sign failed (${resp.status})`)
+            }
+            setIsSigning(false)
+          } catch {
+            setIsSigning(false)
+          }
+        }}
+      />
     </>
   )
 }

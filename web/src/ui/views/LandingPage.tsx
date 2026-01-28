@@ -1,15 +1,19 @@
 import { Link } from 'react-router-dom'
-import { useEffect, useMemo, useState } from 'react'
-import { useServices } from '../../app/AppProviders'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useAuth, useServices } from '../../app/AppProviders'
 import { listInitiatives } from '../../application/usecases/listInitiatives'
 import type { Initiative } from '../../domain/initiative/Initiative'
 import { useLegislativeBody } from '../legislativeBodies'
+import { SignatureModal } from '../components/SignatureModal'
 
 export function LandingPage() {
   const { initiativeRepository } = useServices()
   const { body: legislativeBody } = useLegislativeBody()
+  const { token } = useAuth()
   const [items, setItems] = useState<Initiative[]>([])
   const [q, setQ] = useState('')
+  const [signingInitiative, setSigningInitiative] = useState<Initiative | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   useEffect(() => {
     document.title = 'ballot-sign • Discover and sign initiatives'
@@ -168,14 +172,47 @@ export function LandingPage() {
                 <Link to={`/initiatives/${i.slug}`} className="btn-primary" style={{ flex: '1 1 auto' }}>
                   View Details
                 </Link>
-                <Link to={`/initiatives/${i.slug}/sign`} className="btn-secondary">
+                <button type="button" onClick={() => setSigningInitiative(i)} className="btn-secondary">
                   Sign
-                </Link>
+                </button>
               </div>
             </article>
           ))}
         </div>
       </section>
+
+      <SignatureModal
+        open={!!signingInitiative}
+        onClose={() => setSigningInitiative(null)}
+        canvasRef={canvasRef}
+        onClear={() => {
+          const ctx = canvasRef.current?.getContext('2d')
+          if (!ctx || !canvasRef.current) return
+          ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
+        }}
+        onSubmit={async () => {
+          if (!signingInitiative) return
+          try {
+            const signatureImage = canvasRef.current?.toDataURL('image/png') ?? undefined
+            const resp = await fetch(`/api/ballot/initiatives/${signingInitiative.id}/sign`, {
+              method: 'POST',
+              headers: token
+                ? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+                : { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ initiative_id: signingInitiative.id, signature_image: signatureImage }),
+            })
+            if (!resp.ok) {
+              const text = await resp.text().catch(() => '')
+              throw new Error(text || `Sign failed (${resp.status})`)
+            }
+            // Maybe show a success message
+            setSigningInitiative(null)
+          } catch {
+            // Maybe show an error message
+            setSigningInitiative(null)
+          }
+        }}
+      />
     </div>
   )
 }

@@ -6,6 +6,13 @@ export default defineConfig(({ command }) => ({
   plugins: [react()],
   base: command === 'serve' ? '/dev/' : '/',
   server: {
-    allowedHosts: ['ballot-vm.local', 'ballot.arkavo.org'],
+    allowedHosts: ['ballot-vm.local', 'ballot.arkavo.org', 'webapp'],
+    hmr: {
+      host: 'ballot.arkavo.org',
+      protocol: 'wss',
+      port: 443,
+      clientPort: 443,
+      path: '/',
+    },
   },
 }))

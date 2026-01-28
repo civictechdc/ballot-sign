@@ -8,8 +8,6 @@ import time
 from datetime import datetime, timedelta
 from typing import Dict, Optional, Any, List, Type
 from pathlib import Path
-from urllib.parse import urlparse
-
 here = Path(os.path.abspath(os.path.dirname(__file__)))
 
 # if colima is installed, point socket to that
@@ -207,21 +205,20 @@ def run_container(config):
 def wait_for_db(network, db_url, db_user="postgres", max_attempts=30, delay=2):
     print(f"Using db_url: {db_url}")
     print(f"Waiting for the database to respond on {db_url}...")
+    host = None
+    port = None
     if "://" in db_url:
+        from urllib.parse import urlparse
+
         parsed = urlparse(db_url)
         host = parsed.hostname
         port = parsed.port or 5432
     else:
-        host_port = db_url.split("/", 1)[0]
-        if ":" in host_port:
-            host, port_str = host_port.rsplit(":", 1)
-            port = int(port_str)
-        else:
-            host = host_port
-            port = 5432
-
-    if not host:
-        raise ValueError(f"Could not parse host from db_url: {db_url}")
+        host_port = db_url.rsplit(":", 1)
+        if len(host_port) == 2:
+            host, port = host_port[0], host_port[1]
+    if not host or not port:
+        raise ValueError(f"Unsupported db_url format: {db_url}")
 
     while True:
         try:
@@ -609,17 +606,20 @@ def initializeFiles(srcdir = here):
     # Check if we are in a GitHub Actions environment
     in_github_actions = os.getenv("GITHUB_ACTIONS") == "true"
     print(in_github_actions)
-    envFile = os.path.join(srcdir, "editme.py")
-    envExampleFile = os.path.join(srcdir, "editme.example.py")
-    if not os.path.isfile(envFile):
-        shutil.copy(envExampleFile, envFile)
-        print("editme.py file did not exist and has been created. Please edit it to update the necessary values, then re-run this script.")
-        
-        # Exit only if not in GitHub Actions
-        if not in_github_actions:
-            sys.exit(1)
-        else:
-            print("Running in GitHub Actions, continuing without exiting.")
+    for file in os.listdir(srcdir):
+        fullfile = os.path.join(srcdir, file)
+        if fullfile.endswith("editme.example.py"):
+            envFile = fullfile.replace(".example","")
+            if os.path.exists(envFile):
+                continue
+            shutil.copy(fullfile, envFile)
+            print("env.py file did not exist and has been created. Please edit it to update the necessary values, then re-run this script.")
+            
+            # Exit only if not in GitHub Actions
+            if not in_github_actions:
+                sys.exit(1)
+            else:
+                print("Running in GitHub Actions, continuing without exiting.")
 
 def check_nvidia_gpu():
     print("NVIDIA GPU Detected on system")
