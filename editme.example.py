@@ -1,0 +1,7 @@
+prefix = ""
+MINIO_ROOT_USER = "minio"
+MINIO_ROOT_PASSWORD = "changeme"
+SPICEDB_POSTGRES_USER = "spicedb"
+SPICEDB_POSTGRES_PASSWORD = "changeme"
+SPICEDB_POSTGRES_DB = "spice"
+SPICEDB_PRESHARED_KEY = "dev-spicedb-key"

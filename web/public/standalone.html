@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Voice for DC | Ballot Sign</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-sage: #4c6d74;
+            --color-sage-dark: #3d5a60;
+            --color-sage-light: #5a7d84;
+            --color-cream: #f3f0dd;
+            --color-cream-dark: #dbd8c7;
+        --color-text-primary: #1a1a1a;
+            --color-text-secondary: #666666;
+            --color-text-muted: #8a8a8a;
+            --color-white: #ffffff;
+            --color-border: #d4d1c2;
+            --color-progress-bg: #d9d6cc;
+            --color-progress-fill: #4c6d74;
+            --color-icon-tile: #b9cec7;
+            
+            --font-display: 'Cormorant Garamond', Georgia, serif;
+            --font-body: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+            
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-cream);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--color-cream);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 64px;
+            height: 64px;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--color-text-primary);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: opacity 0.2s ease;
+        }
+
+        .nav-link:hover {
+            text-decoration: underline;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--color-white);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border);
+            color: var(--color-text-primary);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: box-shadow 0.2s ease;
+        }
+
+        .user-menu:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--color-cream-dark);
+            border-radius: 50%;
+            border: 1px solid var(--color-border);
+        }
+
+        /* Main Content */
+        .main {
+            background-color: var(--color-cream);
+            min-height: calc(100vh - 100px);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 3rem 2rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 500;
+            font-style: italic;
+            color: var(--color-text-primary);
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .hero-subtitle strong {
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        /* Search */
+        .search-container {
+            max-width: 700px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--color-white);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 0.875rem 1.25rem;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .search-box:focus-within {
+            box-shadow: var(--shadow-md);
+            border-color: var(--color-sage);
+        }
+
+        .search-icon {
+            width: 20px;
+            height: 20px;
+            fill: var(--color-text-muted);
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            color: var(--color-text-primary);
+            background: transparent;
+        }
+
+        .search-input::placeholder {
+            color: var(--color-text-muted);
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+        }
+
+        .filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--color-white);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-full);
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            color: var(--color-text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-chip:hover {
+            border-color: var(--color-sage);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filter-chip.active {
+            background: var(--color-sage);
+            color: var(--color-white);
+            border-color: var(--color-sage);
+        }
+
+        .filter-chip svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Content Grid */
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 2.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 3rem;
+        }
+
+        /* Section Headers */
+        .section-header {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            margin-bottom: 1.25rem;
+        }
+
+        /* Initiative Cards */
+        .initiatives-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .initiative-card {
+            background: var(--color-white);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        .initiative-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .initiative-content {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .initiative-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--color-icon-tile);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .initiative-icon svg {
+            width: 32px;
+            height: 32px;
+            fill: var(--color-sage);
+        }
+
+        .initiative-details {
+            flex: 1;
+        }
+
+        .initiative-title {
+            font-family: var(--font-body);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .progress-container {
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--color-progress-bg);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--color-progress-fill);
+            border-radius: var(--radius-full);
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .sign-button {
+            width: 100%;
+            background: var(--color-sage);
+            color: var(--color-white);
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1.5rem;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            margin-top: 1rem;
+        }
+
+        .sign-button:hover {
+            background: var(--color-sage-dark);
+        }
+
+        .sign-button:active {
+            transform: scale(0.98);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Activity Section */
+        .activity-section {
+            margin-bottom: 2rem;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.625rem 0;
+            font-size: 0.9rem;
+        }
+
+        .activity-label {
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .activity-value {
+            color: var(--color-text-secondary);
+        }
+
+        /* News Section */
+        .news-section {
+            margin-bottom: 2rem;
+        }
+
+        .news-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .news-icon {
+            width: 32px;
+            height: 32px;
+            fill: var(--color-text-primary);
+        }
+
+        .news-card {
+            background: var(--color-white);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+        }
+
+        .news-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--color-cream-dark);
+            font-size: 0.9rem;
+            color: var(--color-text-primary);
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .news-item:hover {
+            color: var(--color-sage);
+        }
+
+        .news-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .news-item:first-child {
+            padding-top: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 2.25rem;
+            }
+
+            .nav {
+                gap: 1rem;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .nav-link:not(:last-child) {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 1.875rem;
+            }
+
+            .filters {
+                justify-content: flex-start;
+                padding: 0 0.5rem;
+            }
+
+            .content {
+                padding: 0 1rem 2rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .initiative-card {
+            animation: fadeInUp 0.5s ease-out backwards;
+        }
+
+        .initiative-card:nth-child(1) { animation-delay: 0.1s; }
+        .initiative-card:nth-child(2) { animation-delay: 0.2s; }
+        .initiative-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .sidebar > * {
+            animation: fadeInUp 0.5s ease-out backwards;
+        }
+
+        .sidebar > *:nth-child(1) { animation-delay: 0.15s; }
+        .sidebar > *:nth-child(2) { animation-delay: 0.25s; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <img src="/laurel_wreath_logo.png" alt="Ballot Sign Logo" class="logo-icon">
+        </div>
+        <nav class="nav">
+            <a href="#" class="nav-link">Find Initiatives</a>
+            <a href="#" class="nav-link">Start a Petition</a>
+            <a href="#" class="nav-link">About</a>
+            <div class="user-menu">
+                <div class="user-avatar"></div>
+                <span>Hi, Alex</span>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main">
+        <section class="hero">
+            <h1 class="hero-title">Your Voice for your legislative body.</h1>
+            <p class="hero-subtitle">
+                Welcome back, <strong>Alex</strong>. We've curated initiatives for you based on your recent activity 
+                in your legislative body and your interest in Environment and Education.
+            </p>
+
+            <div class="search-container">
+                <div class="search-box">
+                    <svg class="search-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <path d="M16 16l5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <input type="text" class="search-input" placeholder="Search for Initiatives by Topic, State, or Keywords">
+                </div>
+            </div>
+
+            <div class="filters">
+                <span class="filter-label">Filter:</span>
+                <button class="filter-chip active">
+                    Legislative Body (Selected)
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <button class="filter-chip">
+                    [Topics] (Environment, Education)
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+        <div class="content">
+            <section class="initiatives">
+                <h2 class="section-header">Recommended for You</h2>
+                <div class="initiatives-list">
+                    <article class="initiative-card" data-initiative-id="parks-bond">
+                        <div class="initiative-content">
+                            <div class="initiative-icon">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- Park/Tree icon -->
+                                    <path d="M12 2L8 8h2v3H8l-3 6h4v5h6v-5h4l-3-6h-2V8h2L12 2z"/>
+                                </svg>
+                            </div>
+                            <div class="initiative-details">
+                                <h3 class="initiative-title">Local Parks & Rec Bond: Your City Initiative</h3>
+                                <div class="progress-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 49.6%"></div>
+                                    </div>
+                                    <p class="progress-text">Signatures: 12,400 / 25,000</p>
+                                </div>
+                                <button class="sign-button">Sign Petition</button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="initiative-card" data-initiative-id="education-funding">
+                        <div class="initiative-content">
+                            <div class="initiative-icon">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- Education/Book icon -->
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" fill="none" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M8 7h8M8 11h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <div class="initiative-details">
+                                <h3 class="initiative-title">Public Education Funding Initiative</h3>
+                                <div class="progress-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 72%"></div>
+                                    </div>
+                                    <p class="progress-text">Signatures: 18,000 / 25,000</p>
+                                </div>
+                                <button class="sign-button">Sign Petition</button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="initiative-card" data-initiative-id="clean-energy">
+                        <div class="initiative-content">
+                            <div class="initiative-icon">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- Clean Energy/Sun icon -->
+                                    <circle cx="12" cy="12" r="4"/>
+                                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <div class="initiative-details">
+                                <h3 class="initiative-title">Clean Energy for All Act</h3>
+                                <div class="progress-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 88%"></div>
+                                    </div>
+                                    <p class="progress-text">Signatures: 22,000 / 25,000</p>
+                                </div>
+                                <button class="sign-button">Sign Petition</button>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <aside class="sidebar">
+                <div class="activity-section">
+                    <h2 class="section-header">Your Activity</h2>
+                    <div class="activity-item">
+                        <span class="activity-label">Signed:</span>
+                        <span class="activity-value">Clean Energy for All</span>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-label">Following:</span>
+                        <span class="activity-value">Public Education Funding</span>
+                    </div>
+                </div>
+
+                <div class="news-section">
+                    <div class="news-header">
+                        <h2 class="section-header">Local Impact & News</h2>
+                        <svg class="news-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="1,6 1,22 8,18 16,22 23,18 23,2 16,6 8,2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                            <line x1="8" y1="2" x2="8" y2="18" stroke="currentColor" stroke-width="1.5"/>
+                            <line x1="16" y1="6" x2="16" y2="22" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                    <div class="news-card">
+                        <div class="news-list">
+                            <div class="news-item">New parks proposal for [City]</div>
+                            <div class="news-item">School funding town hall tonight</div>
+                            <div class="news-item">Clean energy deadline approaching</div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <script>
+        // API configuration
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:8001' 
+            : `https://ballot.${window.location.hostname.split('.').slice(1).join('.')}`;
+        
+        // Add interactivity
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                // Toggle active state for demo
+                this.classList.toggle('active');
+            });
+        });
+
+        document.querySelectorAll('.sign-button').forEach(button => {
+            button.addEventListener('click', async function() {
+                const button = this;
+                const originalText = button.textContent;
+                const card = button.closest('.initiative-card');
+                const initiativeId = card.dataset.initiativeId;
+                
+                if (!initiativeId) {
+                    console.error('No initiative ID found');
+                    return;
+                }
+                
+                // Show signing state
+                button.textContent = 'Signing...';
+                button.disabled = true;
+                
+                try {
+                    // For demo, we'll use a mock token. In production, get from Keycloak
+                    const mockToken = 'user-demo-' + Date.now();
+                    
+                    const response = await fetch(`${API_BASE_URL}/api/ballot/initiatives/${initiativeId}/sign`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${mockToken}`
+                        },
+                        body: JSON.stringify({
+                            initiative_id: initiativeId,
+                            name: 'Alex Demo',
+                            email: 'alex@example.com',
+                            zip_code: '20001'
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    
+                    // Update UI with new signature count
+                    button.textContent = 'Signed! ✓';
+                    button.style.background = '#3d4d3d';
+                    
+                    // Update progress bar and text
+                    const progressFill = card.querySelector('.progress-fill');
+                    const progressText = card.querySelector('.progress-text');
+                    
+                    if (progressFill && progressText) {
+                        const newPercentage = result.progress_percentage.toFixed(1);
+                        progressFill.style.width = `${newPercentage}%`;
+                        
+                        // Extract current numbers from text
+                        const textMatch = progressText.textContent.match(/(\d+[,]?\d*)\s*\/\s*(\d+[,]?\d*)/);
+                        if (textMatch) {
+                            const required = textMatch[2];
+                            const current = result.current_signatures.toLocaleString();
+                            progressText.textContent = `Signatures: ${current} / ${required}`;
+                        }
+                    }
+                    
+                    // Update activity sidebar
+                    const activitySection = document.querySelector('.activity-section .activity-item:first-child .activity-value');
+                    if (activitySection && card.querySelector('.initiative-title')) {
+                        const initiativeTitle = card.querySelector('.initiative-title').textContent;
+                        activitySection.textContent = initiativeTitle;
+                    }
+                    
+                    // Don't reset after timeout - keep as signed
+                    
+                } catch (error) {
+                    console.error('Error signing petition:', error);
+                    button.textContent = 'Error - Try Again';
+                    button.style.background = '#d9534f';
+                    
+                    // Reset after 3 seconds
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = '';
+                        button.disabled = false;
+                    }, 3000);
+                }
+            });
+        });
+
+        document.querySelectorAll('.news-item').forEach(item => {
+            item.addEventListener('click', function() {
+                alert('News article: ' + this.textContent);
+            });
+        });
+
+        // Animate progress bars on load
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.progress-fill').forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 300);
+            });
+            
+            // Load initiatives data from API
+            loadInitiatives();
+        });
+        
+        async function loadInitiatives() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/ballot/initiatives`);
+                if (!response.ok) return;
+                
+                const initiatives = await response.json();
+                
+                // Update each card with real data
+                document.querySelectorAll('.initiative-card').forEach(card => {
+                    const initiativeId = card.dataset.initiativeId;
+                    const initiative = initiatives.find(i => i.id === initiativeId);
+                    
+                    if (initiative) {
+                        const progressFill = card.querySelector('.progress-fill');
+                        const progressText = card.querySelector('.progress-text');
+                        
+                        if (progressFill && progressText) {
+                            progressFill.style.width = `${initiative.progress_percentage}%`;
+                            progressText.textContent = `Signatures: ${initiative.current_signatures.toLocaleString()} / ${initiative.required_signatures.toLocaleString()}`;
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading initiatives:', error);
+            }
+        }
+    </script>
+</body>
+</html>

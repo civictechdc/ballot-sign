@@ -36,6 +36,12 @@ This project aims to address those challenges by creating a secure, accessible, 
 
 This README will evolve as the project takes shape.
 
+## Project docs
+
+- Architecture recommendations: `docs/architecture/ARCHITECTURE_RECOMMENDATIONS.md`
+- Frontend mockup recommendations: `docs/mockups/FRONTEND_MOCKUP_RECOMMENDATIONS.md`
+- AWS deployment (static demo): `docs/deployment/AWS_DEPLOYMENT.md`
+
 ---
 
 ## How to Get Involved
